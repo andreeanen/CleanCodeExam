@@ -15,7 +15,7 @@ namespace ExamenCleanCode2021.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
-        private readonly IHttpClientFactory clientFactory;
+        public IHttpClientFactory clientFactory;
 
         public MovieController(IHttpClientFactory clientFactory)
         {
@@ -23,21 +23,38 @@ namespace ExamenCleanCode2021.Controllers
         }
 
 
-        [HttpGet("detailed")]
-        public async Task<ActionResult> GetDetailedList()
+        [HttpGet("detailed/order={order}")]
+        public async Task<ActionResult> GetCombined(string order)
         {
+            List<Movie> moviesCombined = await GetCombineMoviesList();
 
-            var client = clientFactory.CreateClient();
-            var result = await client.GetStringAsync("https://ithstenta2020.s3.eu-north-1.amazonaws.com/detailedMovies.json");
-            var movies = JsonSerializer.Deserialize<List<Movie>>(result);
+            var moviesCombinedOrderedByRating = OrderMoviesByRating(moviesCombined, order);
 
-            return Ok(movies);
+            var movieTitleVisitor = new MovieTitleVisitor();
+            var listOfMovieTitlesCombined = movieTitleVisitor.GetListOfMovieTitles(moviesCombinedOrderedByRating);
+
+            return Ok(listOfMovieTitlesCombined);
         }
 
-        [HttpGet("toplist")]
-        public async Task<IActionResult> Toplist()
+        private async Task<List<Movie>> GetCombineMoviesList()
         {
-            //List<string> movies = new List<string>();
+            var client = clientFactory.CreateClient();
+            var result = await client.GetStringAsync("https://ithstenta2020.s3.eu-north-1.amazonaws.com/topp100.json");
+            var movies = JsonSerializer.Deserialize<List<Movie>>(result, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+
+            var resultDetailed = await client.GetStringAsync("https://ithstenta2020.s3.eu-north-1.amazonaws.com/detailedMovies.json");
+            var detailedMovies = JsonSerializer.Deserialize<List<DetailedMovie>>(resultDetailed, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
+                .Select(x => new Movie { Id = x.Id, Title = x.Title, Rated = x.ImdbRating.ToString() });
+
+            var existingTitles = movies.Select(x => x.Title.ToLower());
+            var filteredDetailed = detailedMovies.Where(x => !existingTitles.Contains(x.Title.ToLower())).ToList();
+            var moviesCombined = movies.Concat(filteredDetailed).ToList();
+            return moviesCombined;
+        }
+
+        [HttpGet("toplist/order={order}")]
+        public async Task<IActionResult> GetToplist(string order)
+        {
             var url = "https://ithstenta2020.s3.eu-north-1.amazonaws.com/topp100.json";
             var client = clientFactory.CreateClient();
             var response = await client.GetAsync(url);
@@ -45,9 +62,7 @@ namespace ExamenCleanCode2021.Controllers
             {
                 var result = await client.GetStringAsync(url);
                 var movies = JsonSerializer.Deserialize<List<Movie>>(result, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-
-                string howToOrderMovies = "ascending";
-                var moviesOrderedByRating = GetOrderedMovies(movies, howToOrderMovies);
+                var moviesOrderedByRating = OrderMoviesByRating(movies, order);
 
                 var movieTitleVisitor = new MovieTitleVisitor();
                 var listOfMovieTitles = movieTitleVisitor.GetListOfMovieTitles(moviesOrderedByRating);
@@ -59,7 +74,7 @@ namespace ExamenCleanCode2021.Controllers
 
         }
 
-        public List<Movie> GetOrderedMovies(List<Movie> movies, string howToOrderMovies)
+        public List<Movie> OrderMoviesByRating(List<Movie> movies, string howToOrderMovies)
         {
             var moviesToOrder = movies;
             if (howToOrderMovies == "ascending")
@@ -79,18 +94,10 @@ namespace ExamenCleanCode2021.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetMovieById(string id)
         {
-            var url = "https://ithstenta2020.s3.eu-north-1.amazonaws.com/topp100.json";
-            var client = clientFactory.CreateClient();
-            var response = await client.GetAsync(url);
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await client.GetStringAsync(url);
-                var movieList = JsonSerializer.Deserialize<List<Movie>>(result, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-                var movieWithId = movieList.Where(m => m.Id == id).FirstOrDefault();
+            List<Movie> moviesCombined = await GetCombineMoviesList();
+            var movieWithId = moviesCombined.Where(m => m.Id == id).FirstOrDefault();
 
-                return Ok(movieWithId);
-            }
-            return NotFound();
+            return Ok(movieWithId);
         }
     }
 }

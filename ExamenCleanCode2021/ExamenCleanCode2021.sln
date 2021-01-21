@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExamenCleanCode2021", "ExamenCleanCode2021\ExamenCleanCode2021.csproj", "{47387F7F-3EE2-4F9B-B3AA-9210B118E399}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExamenCleanCode2021", "ExamenCleanCode2021\ExamenCleanCode2021.csproj", "{47387F7F-3EE2-4F9B-B3AA-9210B118E399}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MovieTests", "MovieTests\MovieTests.csproj", "{B8725714-3130-487D-9EC0-7F1BE1F6E874}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{47387F7F-3EE2-4F9B-B3AA-9210B118E399}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47387F7F-3EE2-4F9B-B3AA-9210B118E399}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47387F7F-3EE2-4F9B-B3AA-9210B118E399}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8725714-3130-487D-9EC0-7F1BE1F6E874}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8725714-3130-487D-9EC0-7F1BE1F6E874}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8725714-3130-487D-9EC0-7F1BE1F6E874}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8725714-3130-487D-9EC0-7F1BE1F6E874}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
