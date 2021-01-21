@@ -11,6 +11,9 @@ namespace MovieTests
     {
         public IHttpClientFactory clientFactory;
 
+
+
+
         //[TestMethod]
         //public void GetMovieById_OrdersIsInstantiated_ReturnsOk()
         //{
@@ -35,13 +38,13 @@ namespace MovieTests
             {
                 new Movie
                 {
-                     Id="tt0060196",
+                     Id="0",
                      Title ="The Good, the Bad and the Ugly",
                      Rated="8,8"
                 },
                 new Movie
                 {
-                    Id= "tt0097576",
+                    Id= "1",
                     Title= "Indiana Jones and the Last Crusade",
                     Rated ="7,6"
                 }
@@ -51,13 +54,13 @@ namespace MovieTests
             {
                 new Movie
                 {
-                    Id= "tt0097576",
+                    Id= "1",
                     Title= "Indiana Jones and the Last Crusade",
                     Rated ="7,6"
                 },
                 new Movie
                 {
-                     Id="tt0060196",
+                     Id="0",
                      Title ="The Good, the Bad and the Ugly",
                      Rated="8,8"
                 },
@@ -65,10 +68,12 @@ namespace MovieTests
 
             string howToOrderMovies = "ascending";
             var controller = new MovieController(clientFactory);
-            var actual = controller.OrderMoviesByRating(mockMovies, howToOrderMovies);
+            var movieList = controller.OrderMoviesByRating(mockMovies, howToOrderMovies) as List<Movie>;
 
-            actual.Equals(expected);
-            //CollectionAssert.AreEquivalent(expected, actual);
+            var expectedMovie = mockMovies[0];
+            var actualMovie = movieList[1];
+
+            Assert.AreEqual(expectedMovie, actualMovie);
 
         }
 
@@ -112,9 +117,31 @@ namespace MovieTests
             var controller = new MovieController(clientFactory);
             var actual = controller.OrderMoviesByRating(mockMovies, howToOrderMovies);
 
-            actual.Equals(expected);
 
         }
+
+
+        //[TestMethod]
+        //public void GetMovieByIdReturnsRightMovie()
+        //{
+        //    var mockMovies = new List<Movie>();
+
+        //    var movie = new Movie
+        //    {
+        //        Id = "0",
+        //        Title = "The Good, the Bad and the Ugly",
+        //        Rated = "8,8"
+        //    };
+
+        //    mockMovies.Add(movie);
+
+        //    var controller = new MovieController(clientFactory);
+        //    var testId = "1";
+        //    var actualResult = controller.GetMovieById("tt0060196") as OkObjectResult;
+        //    var ingredients = actualResult.Value as List<Movie>;
+        //    //Assert.AreEqual(testId, actual.id);
+
+        //}
 
     }
 }
